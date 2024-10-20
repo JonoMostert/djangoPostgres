@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to the Budgeting Collective Tool</h1>
+    <h2>Upload your CSV files below:</h2>
+    <form method="POST" enctype="multipart/form-data" action="{% url 'upload_csv' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload Files</button>
+    </form>
+
+    <hr>
+
+    <h2>Table1 Data:</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table1_data %}
+                <tr>
+                    <td>{{ row.Date }}</td>
+                    <td>{{ row.Description }}</td>
+                    <td>{{ row.Category }}</td>
+                    <td>{{ row.Amount }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Table2 Data:</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table2_data %}
+                <tr>
+                    <td>{{ row.Date }}</td>
+                    <td>{{ row.Description }}</td>
+                    <td>{{ row.Amount }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
