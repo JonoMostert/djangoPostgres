@@ -16,7 +16,7 @@
 
     <hr>
 
-    <h2>Table1 Data:</h2>
+    <h2>Monzo Data:</h2>
     <table border="1">
         <thead>
             <tr>
@@ -40,7 +40,7 @@
 
     <hr>
 
-    <h2>Table2 Data:</h2>
+    <h2>Amex Data:</h2>
     <table border="1">
         <thead>
             <tr>
@@ -59,5 +59,12 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <hr>
+
+    <!-- Summary Button -->
+    <a href="{% url 'summary_execute' %}">
+        <button type="button">Create Summary</button>
+    </a>
 </body>
 </html>

@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from .forms import CSVUploadForm
-from .models import Table1, Table2
+from .models import Table1, Table2, CombinedTable
 import pandas as pd
-import os
+from .summaryTableCreate import populate_combined_table
 
 # def home(request):
 #     return HttpResponse('homepage')
@@ -32,6 +32,10 @@ def dashboard(request):
 
 # CSV upload view
 def upload_csv(request):
+    # Fetch all data from Table1 and Table2
+    Table1.objects.all().delete()
+    Table2.objects.all().delete()
+
     if request.method == 'POST':
         form = CSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -59,8 +63,24 @@ def upload_csv(request):
                     Description=row['Description'],
                     Amount=row['Amount'],
                     # Add more fields as necessary
-                )
+                )            
             
             # Redirect to a success page or dashboard
             return redirect('dashboard')
     return JsonResponse({'error': 'Invalid form'}, status=400)
+
+# CSV upload view
+def summary(request):
+
+    masterTable_data = CombinedTable.objects.all()
+
+    return render(request, 'summary.html', {        
+        'masterTable_data' : masterTable_data
+        })
+
+def summary_execute(request):
+    # Call the function to populate CombinedTable
+    populate_combined_table()
+    
+    # Redirect to the summary page to display the combined data
+    return redirect('summary')
