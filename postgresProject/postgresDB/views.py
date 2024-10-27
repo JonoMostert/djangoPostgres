@@ -4,20 +4,27 @@ from .forms import CSVUploadForm
 from .models import Table1, Table2, CombinedTable
 import pandas as pd
 from .summaryTableCreate import populate_combined_table
+from .categoryCreation import assign_categories
+from collections import defaultdict
+import json
 
 # def home(request):
 #     return HttpResponse('homepage')
+
+category_choices = ['General','Transport','Bills','Entertainment','Gifts','Groceries','Personal care','Savings','Shopping','Eating out','Subscriptions']
 
 def about(request):
     return HttpResponse('about')
 
 # Home page view
 def home(request):
+    Table1.objects.all().delete()
+    Table2.objects.all().delete()
     return render(request, 'home.html')
 
 # Dashboard page view
 def dashboard(request):
-    form = CSVUploadForm()
+    form = CSVUploadForm()    
 
      # Fetch all data from Table1 and Table2
     table1_data = Table1.objects.all()  # Get all rows from Table1
@@ -27,14 +34,15 @@ def dashboard(request):
     return render(request, 'dashboard.html', {
         'form': form,
         'table1_data' : table1_data,
-        'table2_data' : table2_data
+        'table2_data' : table2_data,
+        'category_choices' : category_choices
         })
 
 # CSV upload view
 def upload_csv(request):
-    # Fetch all data from Table1 and Table2
-    Table1.objects.all().delete()
-    Table2.objects.all().delete()
+    # Delete all data from Table1 and Table2
+    # Table1.objects.all().delete()
+    # Table2.objects.all().delete()
 
     if request.method == 'POST':
         form = CSVUploadForm(request.POST, request.FILES)
@@ -63,7 +71,9 @@ def upload_csv(request):
                     Description=row['Description'],
                     Amount=row['Amount'],
                     # Add more fields as necessary
-                )            
+                )  
+
+            assign_categories()          
             
             # Redirect to a success page or dashboard
             return redirect('dashboard')
@@ -74,8 +84,31 @@ def summary(request):
 
     masterTable_data = CombinedTable.objects.all()
 
+    # Process data for the chart
+    monthly_data = defaultdict(lambda: defaultdict(float))  # Nested default dict for category sums per month
+    for entry in masterTable_data:
+        month = entry.Date#.strftime('%B %Y')  # Format month as "Month Year"
+        monthly_data[month][entry.Category] += float(entry.Amount)
+
+    # Format data for Chart.js
+    months = list(monthly_data.keys())
+    categories = {category for data in monthly_data.values() for category in data.keys()}
+    
+    # Create dataset for each category
+    datasets = []
+    for category in categories:
+        datasets.append({
+            'label': category,
+            'data': [monthly_data[month].get(category, 0) for month in months],
+            'backgroundColor': 'rgba(75, 192, 192, 0.2)',
+            'borderColor': 'rgba(75, 192, 192, 1)',
+            'borderWidth': 1
+        })
+
     return render(request, 'summary.html', {        
-        'masterTable_data' : masterTable_data
+        'masterTable_data' : masterTable_data,
+        'months' : json.dumps(months),
+        'datasets' : json.dumps(datasets),
         })
 
 def summary_execute(request):
@@ -84,3 +117,13 @@ def summary_execute(request):
     
     # Redirect to the summary page to display the combined data
     return redirect('summary')
+
+def update_categories(request):
+    if request.method == "POST":
+        for key, value in request.POST.items():
+            if key.startswith("category_"):
+                row_id = key.split("_")[1]
+                category = value
+                # Update the category in the database
+                Table2.objects.filter(id=row_id).update(Category=category)
+    return redirect('dashboard')

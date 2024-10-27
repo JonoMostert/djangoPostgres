@@ -41,26 +41,36 @@
     <hr>
 
     <h2>Amex Data:</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in table2_data %}
+    <form method="POST" action="{% url 'update_categories' %}">
+        {% csrf_token %}
+        <table border="1">
+            <thead>
                 <tr>
-                    <td>{{ row.Date }}</td>
-                    <td>{{ row.Description }}</td>
-                    <td>{{ row.Amount }}</td>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Amount</th>                    
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <hr>
+            </thead>
+            <tbody>
+                {% for row in table2_data %}
+                    <tr>
+                        <td>{{ row.Date }}</td>
+                        <td>{{ row.Description }}</td>                        
+                        <td>
+                            <select name="category_{{ row.id }}">
+                                {% for category in category_choices %}
+                                    <option value="{{ category }}" {% if row.Category == category %}selected{% endif %}>{{ category }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>{{ row.Amount }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit">Save Categories</button>
+    </form>
 
     <!-- Summary Button -->
     <a href="{% url 'summary_execute' %}">

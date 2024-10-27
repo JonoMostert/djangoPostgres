@@ -7,7 +7,7 @@ def populate_combined_table():
     CombinedTable.objects.all().delete()
 
     # Retrieve data from Table1 and populate CombinedTable
-    table1_data = Table1.objects.all().values('Date','Description', 'Category', 'Amount')
+    table1_data = Table1.objects.exclude(Description__icontains = "AMERICAN EXP").values('Date','Description', 'Category', 'Amount')
     df1 = pd.DataFrame(table1_data)
 
     if not df1.empty:
@@ -15,12 +15,12 @@ def populate_combined_table():
         df1['MonthYear'] = df1['Date'].dt.to_period('M')        
 
     # Create a DataFrame for Table2 and process date column (assuming no Category)
-    table2_data = Table2.objects.exclude(Description = "PAYMENT RECEIVED - THANK YOU").values('Date', 'Description', 'Amount')
+    table2_data = Table2.objects.exclude(Description = "PAYMENT RECEIVED - THANK YOU").values('Date', 'Description', 'Category', 'Amount')
     df2 = pd.DataFrame(table2_data)
     if not df2.empty:
         df2['Date'] = pd.to_datetime(df2['Date'], format='%d/%m/%Y')
         df2['MonthYear'] = df2['Date'].dt.to_period('M')
-        df2['Category'] = 'Uncategorized'  # Default category for Table2 entries
+        # df2['Category'] = 'Uncategorized'  # Default category for Table2 entries
         df2['Amount'] = df2['Amount']*-1
 
     # Combine the dataframes
