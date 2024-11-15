@@ -59,7 +59,7 @@ def upload_csv(request):
                     Description=row['Name'],
                     Category=row['Category'],
                     Amount=row['Amount'],
-                    # Add more fields as necessary
+                    
                 )                  
 
             # Process file2 and save to Table2
@@ -70,12 +70,12 @@ def upload_csv(request):
                     Date=row['Date'],
                     Description=row['Description'],
                     Amount=row['Amount'],
-                    # Add more fields as necessary
+                    
                 )  
 
             assign_categories()          
             
-            # Redirect to a success page or dashboard
+            # Redirect to dashboard
             return redirect('dashboard')
     return JsonResponse({'error': 'Invalid form'}, status=400)
 
@@ -87,7 +87,7 @@ def summary(request):
     # Process data for the chart
     monthly_data = defaultdict(lambda: defaultdict(float))  # Nested default dict for category sums per month
     for entry in masterTable_data:
-        month = entry.Date#.strftime('%B %Y')  # Format month as "Month Year"
+        month = entry.Date
         monthly_data[month][entry.Category] += float(entry.Amount)
 
     # Format data for Chart.js

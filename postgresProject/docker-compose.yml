@@ -1,24 +1,7 @@
-# version: '3'
-
-# services:
-#   web:
-#     build: .
-#     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-#     volumes:
-#       - .:/app
-#     ports:
-#       - "8000:8000"
-#     depends_on:
-#       - my-postgres
-
-#   my-postgres:
-#     image: postgres
-#     environment:
-#       POSTGRES_PASSWORD: mypassword
 
 services:
   web:
-    image: djangoapp  # Use your custom Django app image
+    image: djangoapp  # Django app image
     container_name: inspiring_goldstine  # Specify the container name
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:

@@ -14,7 +14,7 @@ def populate_combined_table():
         df1['Date'] = pd.to_datetime(df1['Date'], format='%d/%m/%Y')
         df1['MonthYear'] = df1['Date'].dt.to_period('M')        
 
-    # Create a DataFrame for Table2 and process date column (assuming no Category)
+    # Create a DataFrame for Table2 and process date column (no Category)
     table2_data = Table2.objects.exclude(Description = "PAYMENT RECEIVED - THANK YOU").values('Date', 'Description', 'Category', 'Amount')
     df2 = pd.DataFrame(table2_data)
     if not df2.empty:
