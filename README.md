@@ -83,10 +83,43 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-'''
+```
 This tells Django how to connect to the postgres database.
 Finally, the specific image is linked to the container by specifying it in the docker-compose.yml file.
 
 # Machine Learning Model
 
+# Setting up the app for yourself
+
+Clone the repo, then
+```shell script
+cd djangoPostgres/postgresProject
+```
+Set up a virtual environment
+```shell script
+python -m venv .venv
+```
+```shell script
+.venv/Scripts/Activate.ps1
+```
+Install django
+```shell script
+pip install django
+```
+Install Docker Desktop.<br>
+Build the app image
+```shell script
+docker build -t djangoapp .
+```
+Get the postgresSQL image
+```shell script
+docker pull postgres
+```
+Make the database migrations and run the app, it should be available by default at `http://127.0.0.1:8000/`
+```shell script
+python manage.py migrate
+```
+```shell script
+docker-compose up
+```
 
