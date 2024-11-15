@@ -32,7 +32,7 @@ Looking into the the 'postresProject' directory will provide a good understandin
 `views.py` - the methods (views) within are used to connect the user with the app's backend functionality.<br>
 `categoryCreation.py` - contains the predict_category class which calls the Machine Learning model and predicts the Amex categories, and the assign_categories class which assigns the predicted categories to the Amex table in the database .<br>
 'summaryTableCreate.py' - creates a third table in the database that represents the collation of all the transactions.<br>
-`tests.py` - contains tests used to verify the call calculation made by the CallController class.<br>
+`tests.py` - .<br>
 
 ## The models
 Three models are used by the app:
