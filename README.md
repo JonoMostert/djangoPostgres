@@ -88,6 +88,43 @@ This tells Django how to connect to the postgres database.
 Finally, the specific image is linked to the container by specifying it in the docker-compose.yml file.
 
 # Machine Learning Model
+The machine learning model is a Recurrent Neural Network (RNN) incorperated from the Pytorch module. This model was selected above a feedforward model, as RNNs are better suited to sequential data, specifically that of context-dependant data. RNNs untilise a hidden layer, which is used to maintain memory of previous inputs. This allows the model to understand the context provided by the sequence of words in the transaction descriptions - as apposed to a feedforward model that looses inherent ordering or relationships between words.
+
+## The insides of the ML
+There are 5 important files in the folder structure that are worth noting.
+
+`rnn_model.py` - the definition of the RNN model. This is used during training to provide a predicted outcome based on the provided input.<br>
+`train_model.py` - the training script that tockenizes the descriptions and itterates through training Epochs, calling the RNN model at each itteration.<br>
+`transaction_rnn.pth` - the executable of the trained RNN model (with all the weights and biases stored).<br>
+`label_encoder.pkl` - contains the label encoder object. The NN will output integer values representing the categories, this encoder is used to decode these values back into the category names.<br>
+`test_model.py` - the script that is used to validate the model's accuracy.<br>
+
+## Weights and biases
+The RNN contains 3 important wights in the `transaction_rnn.pth` model.
+1. Input-to-Hidden Weights:
+These weights determine how the input features are transformed into the hidden state. i.e the matrix to convert the input data to the usable hidden layer.
+2. Hidden-to-Hidden Weights:
+These weights determine how the hidden state at the previous time step affects the current hidden state.
+3. Hidden-to-Output Weights:
+These weights determine how the hidden state is transformed into the output (e.g. category predictions).
+
+## Areas of improvement
+At present, the accuracy of the model is quite low. There are several reasons for this:
+1. The data set size is not nearly big enough. At present I have around 1500 data points to train the model on from when I first open my bank account. In order to get better results, I would need at least 10k data points.
+2. The data I have at the moment is packed with noise. The vendor descriptions contain locations, special characters and numbers - all of which make the training process more complex. In order to better the training on this data, there are a few possible steps to take:
+    * Pre-process and clean the training data (the issue: training the model on cleaned data will inccure inaccuracy when using the model on real-life noisy data)
+    * pre-process training data and real-life data (the issue: unaccounted for vendor descriptions might contain noisy data that slips through the pre-processing filters)
+    * train the model on a much larger set of noisy data
+3. The input sequence of data to the model needs to be optimised. Here is an overview of the current tockenisation method:
+    * The model uses character-level tockenization (each character in the transaction description is maped to a unique index)
+    * The tokenized sequences are padded to a uniform length (the maximum lenght of the descriptions)
+    * These sequences are then batched in sizes of 64
+   Possible improvements:
+    * Switch to wrod-level tokenization (character-level tokenization might lose the semantic meaning of words)
+    * Use pre-trained embeddings instead of learning embeddings from scratch (currently the case). This can be done with GloVe or FastText.
+    * Use dynamic padding instead of the maximum length of the descriptions from the data set (this will reduce memory and increase performance).
+    * Add positional encoding. Currently, the RNN does not encode the position of the tokens and can therefore limit the ability to understand the importance of the sequence order.
+
 
 # Setting up the app for yourself
 
