@@ -14,9 +14,9 @@ import pickle
 import os
 
 # Parameters
-INPUT_SIZE = 5000  # Adjust based on your data preprocessing
-HIDDEN_SIZE = 128
-OUTPUT_SIZE = 9  # Adjust based on the number of unique categories in your dataset
+INPUT_SIZE = 600#5000  # Adjust based on data preprocessing
+HIDDEN_SIZE = 160#128
+OUTPUT_SIZE = 9  # Adjust based on the number of unique categories in dataset
 EPOCHS = 1000
 BATCH_SIZE = 64
 LEARNING_RATE = 0.0001
@@ -35,7 +35,7 @@ def oversample_minority_classes(descriptions, categories):
     for category, count in category_counts.items():
         category_data = df[df['Category'] == category]
         
-        # If the count is less than the max, we need to upsample
+        # If the count is less than the max, it needs to upsample
         if count < max_count:
             # Calculate the number of samples needed
             samples_needed = max_count - count
@@ -55,7 +55,7 @@ def oversample_minority_classes(descriptions, categories):
 
 
 # Load Data
-data = pd.read_csv('transaction_categorization/data/cleaned_training_data.csv')
+data = pd.read_csv('data/cleaned_training_data.csv')
 descriptions = data['Description'].values
 categories = data['Category'].values
 
@@ -70,7 +70,7 @@ encoded_labels = label_encoder.fit_transform(categories)
 class_weights = compute_class_weight('balanced', classes=np.unique(encoded_labels), y=encoded_labels)
 class_weights = torch.tensor(class_weights, dtype=torch.float)
 
-# Tokenize Descriptions (simple character-level tokenization for illustration)
+# Tokenize Descriptions (simple character-level tokenization)
 vocab = set(''.join(descriptions))
 char_to_idx = {char: idx + 1 for idx, char in enumerate(vocab)}  # Start indexing from 1
 max_length = max(len(desc) for desc in descriptions)
@@ -132,8 +132,8 @@ for epoch in range(EPOCHS):
         # scheduler.step(epoch_loss)
 
     print(f'Epoch [{epoch + 1}/{EPOCHS}], Loss: {epoch_loss / len(X_train_tensor):.4f}')
-    if (epoch_loss/ len(X_train_tensor)) < 0.0105:
-        exit
+    if (epoch_loss/ len(X_train_tensor)) < 0.0005:
+        break
 
     # Save checkpoint after each epoch
 #     checkpoint = {
@@ -146,7 +146,7 @@ for epoch in range(EPOCHS):
 # torch.save(checkpoint, checkpoint_path)    
 
 # Save Model and Label Encoder
-torch.save(model.state_dict(), 'transaction_categorization/models/transaction_rnn2.pth')
-with open('transaction_categorization/models/label_encoder.pkl', 'wb') as f:
+torch.save(model.state_dict(), 'models/transaction_rnn4.pth')
+with open('models/label_encoder.pkl', 'wb') as f:
     pickle.dump(label_encoder, f)
 print("Training complete. Model and label encoder saved.")

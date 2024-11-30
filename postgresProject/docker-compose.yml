@@ -13,7 +13,9 @@ services:
 
   my-postgres:
     image: postgres
+    container_name: my-postgres
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mypassword
     ports:
       - "5432:5432"

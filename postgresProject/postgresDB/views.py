@@ -7,6 +7,7 @@ from .summaryTableCreate import populate_combined_table
 from .categoryCreation import assign_categories
 from collections import defaultdict
 import json
+import random
 
 # def home(request):
 #     return HttpResponse('homepage')
@@ -84,15 +85,25 @@ def summary(request):
 
     masterTable_data = CombinedTable.objects.all()
 
+    # Categories to exclude
+    excluded_categories = {"Income", "Transfers", "Savings"}
+
     # Process data for the chart
     monthly_data = defaultdict(lambda: defaultdict(float))  # Nested default dict for category sums per month
     for entry in masterTable_data:
-        month = entry.Date
-        monthly_data[month][entry.Category] += float(entry.Amount)
+         if entry.Category not in excluded_categories:
+            month = entry.Date
+            monthly_data[month][entry.Category] += float(entry.Amount)
 
     # Format data for Chart.js
     months = list(monthly_data.keys())
     categories = {category for data in monthly_data.values() for category in data.keys()}
+
+     # Generate random colors for each category
+    def generate_color():
+        return f'rgba({random.randint(0, 255)}, {random.randint(0, 255)}, {random.randint(0, 255)}, 0.7)'
+    
+    category_colors = {category: generate_color() for category in categories}
     
     # Create dataset for each category
     datasets = []
@@ -100,8 +111,8 @@ def summary(request):
         datasets.append({
             'label': category,
             'data': [monthly_data[month].get(category, 0) for month in months],
-            'backgroundColor': 'rgba(75, 192, 192, 0.2)',
-            'borderColor': 'rgba(75, 192, 192, 1)',
+            'backgroundColor': category_colors[category],
+            'borderColor': category_colors[category].replace('0.7', '1'),
             'borderWidth': 1
         })
 

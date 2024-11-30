@@ -39,9 +39,9 @@
 
     <script>
         // Ensure the months and datasets variables are correctly passed from Django
-        const x_axis = { months};
-        const datasetsconfig = {datasets};
-
+        const x_axis = JSON.parse('{{ months|safe }}'); // Parse the JSON string into a JavaScript array
+        const datasetsconfig = JSON.parse('{{ datasets|safe }}'); // Parse the JSON string into a JavaScript object
+    
         // Chart.js script to render the chart
         const ctx = document.getElementById('categoryChart').getContext('2d');
         const categoryChart = new Chart(ctx, {

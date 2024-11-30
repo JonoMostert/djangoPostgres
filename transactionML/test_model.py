@@ -5,8 +5,8 @@ import pandas as pd
 import pickle
 
 # Parameters
-INPUT_SIZE = 5000  # Must match the input size used in the training script
-HIDDEN_SIZE = 128   # Must match the hidden size used in the training script
+INPUT_SIZE = 600#5000  # Must match the input size used in the training script
+HIDDEN_SIZE = 160#128   # Must match the hidden size used in the training script
 OUTPUT_SIZE = 9     # Must match the output size used in the training script
 MAX_LENGTH = 100    # Should match the max length used during training
 
@@ -14,11 +14,11 @@ MAX_LENGTH = 100    # Should match the max length used during training
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = TransactionRNN(INPUT_SIZE, HIDDEN_SIZE, OUTPUT_SIZE).to(device)
 # model.load_state_dict(torch.load('transaction_categorization/models/transaction_rnn.pth'))
-model.load_state_dict(torch.load('transaction_categorization/models/transaction_rnn2.pth'))
+model.load_state_dict(torch.load('models/transaction_rnn4.pth'))
 model.eval()
 
 # Load the label encoder
-with open('transaction_categorization/models/label_encoder.pkl', 'rb') as f:
+with open('models/label_encoder.pkl', 'rb') as f:
     label_encoder = pickle.load(f)
 
 # Function to preprocess input data
@@ -33,7 +33,7 @@ def preprocess_data(descriptions):
     return torch.tensor(tokenized_descriptions, dtype=torch.long)
 
 # Load new transaction data for testing
-test_data = pd.read_csv('transaction_categorization/data/cleaned_training_data.csv')  # Ensure the path is correct
+test_data = pd.read_csv('data/cleaned_training_data.csv')  # Ensure the path is correct
 test_descriptions = test_data['Description'].values
 test_cat = test_data['Category'].values
 
